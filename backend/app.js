@@ -1,6 +1,7 @@
 const express = require('express'); // import express
 const app = express(); // création de l'application express
 const userRoutes = require('./routes/users')
+const bookRoutes = require('./routes/books')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv');
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 
 
 app.use('/api/auth', userRoutes);
+app.use('/api/books', bookRoutes)
 
 
 
