@@ -4,11 +4,13 @@ const userRoutes = require('./routes/users')
 const bookRoutes = require('./routes/books')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv');
+const path = require('path')
 
 
 dotenv.config();
 
 app.use(express.json())
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,11 +22,6 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', userRoutes);
 app.use('/api/books', bookRoutes)
-
-
-
-
-
 
 // connection à la bdd
 mongoose.connect(process.env.MONGO_URI)

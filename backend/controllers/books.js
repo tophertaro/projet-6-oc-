@@ -34,5 +34,52 @@ exports.createBook = (req, res, next) => {
       .catch(error => res.status(400).json({ error }));
 };
 
+exports.updateBook = (req, res, next) => {
+  const bookObject = req.file ?
+  {
+      ...JSON.parse(req.body.book),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  } : { ...req.body };
+  
+  Book.updateOne({ _id: req.params.id, userId: req.auth.userId }, { ...bookObject, _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Livre modifié !' }))
+      .catch(error => res.status(400).json({ error }));
+};
 
+exports.deleteBook = (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+      .then(book => {
+          if (book.userId !== req.auth.userId) {
+              return res.status(403).json({ message: 'Unauthorized request' });
+          }
+          const filename = book.imageUrl.split('/images/')[1];
+          fs.unlink(`images/${filename}`, () => {
+              Book.deleteOne({ _id: req.params.id })
+                  .then(() => res.status(200).json({ message: 'Livre supprimé !' }))
+                  .catch(error => res.status(400).json({ error }));
+          });
+      })
+      .catch(error => res.status(500).json({ error }));
+};
+
+exports.rateBook = (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+      .then(book => {
+          const userAlreadyRated = book.ratings.find(rating => rating.userId === req.auth.userId);
+          if (userAlreadyRated) {
+              return res.status(400).json({ message: 'User already rated this book' });
+          }
+          const newRating = {
+              userId: req.auth.userId,
+              grade: req.body.rating
+          };
+          book.ratings.push(newRating);
+          book.averageRating = book.ratings.reduce((sum, rating) => sum + rating.grade, 0) / book.ratings.length;
+          
+          book.save()
+              .then(() => res.status(201).json(book))
+              .catch(error => res.status(400).json({ error }));
+      })
+      .catch(error => res.status(400).json({ error }));
+};
 
