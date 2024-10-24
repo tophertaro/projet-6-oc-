@@ -45,7 +45,5 @@ const bookSchema = mongoose.Schema({
 
 
 
-// Méthode pour calculer la moyenne des notes
-
 const Book = mongoose.model('Book', bookSchema)
 module.exports = Book;
