@@ -5,9 +5,10 @@ const auth = require('../middlewares/auth')
 const multer = require('../middlewares/multer-config')
 const sharp = require('../middlewares/sharp')
 
+
 router.get('/', bookCtrl.getAllBooks)
-router.get('/:id', bookCtrl.getOneBook)
 router.get('/bestrating', bookCtrl.getBestRatedBooks)
+router.get('/:id', bookCtrl.getOneBook)
 router.post('/', auth, multer, sharp, bookCtrl.createBook)
 router.put('/:id', auth, multer, bookCtrl.updateBook)
 router.delete('/:id', auth, bookCtrl.deleteBook)
