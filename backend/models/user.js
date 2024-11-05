@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
   }
 });
 
-userSchema.plugin(uniqueValidator);
+userSchema.plugin(uniqueValidator); // plugin appliqué au schéma
 
 const User = mongoose.model('User', userSchema);
 
